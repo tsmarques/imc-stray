@@ -6,6 +6,8 @@
 #ifndef QT_NO_SYSTEMTRAYICON
 
 #include <QDialog>
+#include <QTableView>
+#include <QTableWidget>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -40,27 +42,11 @@ private slots:
     void messageClicked();
 
 private:
-    void createIconGroupBox();
-    void createMessageGroupBox();
+    void createTable();
     void createActions();
     void createTrayIcon();
 
-    QGroupBox *iconGroupBox;
-    QLabel *iconLabel;
-    QComboBox *iconComboBox;
-    QCheckBox *showIconCheckBox;
-
-    QGroupBox *messageGroupBox;
-    QLabel *typeLabel;
-    QLabel *durationLabel;
-    QLabel *durationWarningLabel;
-    QLabel *titleLabel;
-    QLabel *bodyLabel;
-    QComboBox *typeComboBox;
-    QSpinBox *durationSpinBox;
-    QLineEdit *titleEdit;
-    QTextEdit *bodyEdit;
-    QPushButton *showMessageButton;
+    QTableWidget* m_contact_list;
 
     QAction *minimizeAction;
     QAction *maximizeAction;
