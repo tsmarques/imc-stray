@@ -7,10 +7,24 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 set(QT_VERSION 5)
-set(REQUIRED_LIBS Core Gui Widgets)
-set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Gui Qt5::Widgets)
+set(REQUIRED_LIBS Core Gui Widgets Network)
+set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network)
 
-add_executable(${PROJECT_NAME} main.cpp Window.cpp Window.hpp systray.qrc)
+file(GLOB_RECURSE IMC_SOURCES
+        imc-cxx/IMC/Base/*.hpp
+        imc-cxx/IMC/Spec/*.hpp
+        imc-cxx/IMC/Base/*.cpp
+        imc-cxx/IMC/Spec/*.cpp)
+
+include_directories(${PROJECT_NAME} imc-cxx)
+
+add_executable(${PROJECT_NAME}
+        main.cpp
+        Window.cpp
+        Window.hpp
+        systray.qrc
+        AnnounceListener.hpp
+        ${IMC_SOURCES})
 
 if (NOT CMAKE_PREFIX_PATH)
     message(WARNING "CMAKE_PREFIX_PATH is not defined, you may need to set it "
@@ -19,3 +33,4 @@ endif ()
 
 find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})
+target_link_libraries(${PROJECT_NAME} "pthread")

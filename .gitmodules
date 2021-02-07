@@ -1,0 +1,3 @@
+[submodule "imc-cxx"]
+	path = imc-cxx
+	url = git@github.com:oceanscan/imc-cxx.git

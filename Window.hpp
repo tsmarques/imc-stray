@@ -8,6 +8,7 @@
 #include <QDialog>
 #include <QTableView>
 #include <QTableWidget>
+#include <QtNetwork>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -20,15 +21,16 @@ class QMenu;
 class QPushButton;
 class QSpinBox;
 class QTextEdit;
+class QUdpSocket;
 QT_END_NAMESPACE
 
 //! [0]
 class Window : public QDialog
 {
 Q_OBJECT
-
 public:
     Window();
+    void init();
 
     void setVisible(bool visible) override;
 
@@ -40,6 +42,8 @@ private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void showMessage();
     void messageClicked();
+
+    void onClose();
 
 private:
     void createTable();
@@ -55,6 +59,9 @@ private:
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
+
+  std::atomic<bool> should_listen;
+  std::thread listener_thread;
 };
 //! [0]
 
