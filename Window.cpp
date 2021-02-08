@@ -33,6 +33,7 @@ Window::Window() :
 
   connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::messageClicked);
   connect(trayIcon, &QSystemTrayIcon::activated, this, &Window::iconActivated);
+  connect(&list, &SystemListener::announceEvent, this, &Window::on);
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addWidget(m_contact_list);
@@ -42,23 +43,21 @@ Window::Window() :
   setWindowTitle(tr("IMC System Listener"));
   resize(225, 300);
 
+  // @todo handle fail
+  list.bind(30100);
   listener_thread = std::thread([this]()
               {
-                SystemListener list;
-                list.bind(30100);
-
                 std::cout << "starting listener\n";
                 while(this->should_listen)
                 {
                   try
                   {
                     std::cout << "waiting for announce..\n";
-                    std::unique_ptr<IMC::Announce> announce = list.read();
+                    IMC::Announce* announce = list.read();
                     if (announce == nullptr)
                       continue;
 
-                    std::cout << "got announce from " << announce->getName() << std::endl;
-                    trayIcon->showMessage("Announce", "From something", trayIcon->icon(), 1000);
+                    emit list.announceEvent(announce);
                   } catch(std::runtime_error& e)
                   {
                     std::cerr << e.what() << std::endl;
@@ -229,6 +228,14 @@ void Window::createTrayIcon()
   trayIcon = new QSystemTrayIcon(this);
   trayIcon->setIcon(QIcon(":/assets/disconnected.png"));
   trayIcon->setContextMenu(trayIconMenu);
+}
+
+void Window::on(IMC::Announce* announce)
+{
+  std::cout << announce->services << std::endl;
+  trayIcon->showMessage("Announce", "From something", trayIcon->icon(), 5000);
+
+  delete announce;
 }
 
 void Window::onClose()

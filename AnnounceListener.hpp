@@ -1,12 +1,18 @@
 #ifndef IMC_STRAY_ANNOUNCELISTENER_HPP
 #define IMC_STRAY_ANNOUNCELISTENER_HPP
 
-#include <sys/socket.h>
+#include <IMC/Base/Packet.hpp>
+#include <IMC/Spec/Announce.hpp>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <sys/socket.h>
 
-class SystemListener
+#include <QObject>
+
+class SystemListener : public QObject
 {
+Q_OBJECT
+
   int sockfd; /* socket */
   int portno; /* port to listen on */
   struct sockaddr_in serveraddr; /* server's addr */
@@ -78,7 +84,7 @@ public:
     return true;
   }
 
-  std::unique_ptr<IMC::Announce>
+  IMC::Announce*
   read()
   {
     int clientlen = sizeof(clientaddr);
@@ -105,10 +111,11 @@ public:
       return nullptr;
     }
 
-    std::unique_ptr<IMC::Announce> ptr;
-    ptr.reset((IMC::Announce*) msg);
-    return ptr;
+    return (IMC::Announce*) msg;
   }
+
+signals:
+  void announceEvent(IMC::Announce* announce);
 };
 
 

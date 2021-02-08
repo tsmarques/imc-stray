@@ -5,6 +5,8 @@
 
 #ifndef QT_NO_SYSTEMTRAYICON
 
+#include "AnnounceListener.hpp"
+#include <IMC/Spec/Announce.hpp>
 #include <QDialog>
 #include <QTableView>
 #include <QTableWidget>
@@ -42,6 +44,7 @@ private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void showMessage();
     void messageClicked();
+    void on(IMC::Announce* announce);
 
     void onClose();
 
@@ -61,6 +64,7 @@ private:
     QMenu *trayIconMenu;
 
   std::atomic<bool> should_listen;
+  SystemListener list;
   std::thread listener_thread;
 };
 //! [0]
