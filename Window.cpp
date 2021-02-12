@@ -230,10 +230,27 @@ void Window::createTrayIcon()
   trayIcon->setContextMenu(trayIconMenu);
 }
 
-void Window::on(IMC::Announce* announce)
+void Window::addContact(const IMC::Announce* announce, const QString& addr)
+{
+  QTableWidgetItem* item_addr = new QTableWidgetItem(addr.toStdString().c_str());
+  QTableWidgetItem* item_sysname = new QTableWidgetItem(announce->sys_name.c_str());
+  m_contact_list->setRowCount(m_contact_list->rowCount() + 1);
+  m_contact_list->setItem(m_contact_list->rowCount() - 1, 0, item_sysname);
+  m_contact_list->setItem(m_contact_list->rowCount() - 1, 1, item_addr);
+}
+
+void Window::on(IMC::Announce* announce, QString addr)
 {
   std::cout << announce->services << std::endl;
-  trayIcon->showMessage("Announce", "From something", trayIcon->icon(), 5000);
+
+  if (m_contacts.find(announce->sys_name) == m_contacts.end())
+  {
+    std::string str = "[" + addr.toStdString() + "] " + announce->sys_name;
+    trayIcon->showMessage("Announce", str.c_str(), trayIcon->icon(), 5000);
+    addContact(announce, addr);
+  }
+
+  m_contacts[announce->sys_name] = announce->getTimeStamp();
 
   delete announce;
 }

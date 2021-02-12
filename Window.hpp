@@ -52,6 +52,7 @@ private:
     void createTable();
     void createActions();
     void createTrayIcon();
+    void addContact(const IMC::Announce* announce, const QString& addr);
 
     QTableWidget* m_contact_list;
 
@@ -66,6 +67,7 @@ private:
   std::atomic<bool> should_listen;
   SystemListener list;
   std::thread listener_thread;
+  std::map<std::string, double> m_contacts;
 };
 //! [0]
 
