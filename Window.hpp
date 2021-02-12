@@ -44,7 +44,7 @@ private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void showMessage();
     void messageClicked();
-    void on(IMC::Announce* announce);
+    void on(IMC::Announce* announce, QString addr);
 
     void onClose();
 

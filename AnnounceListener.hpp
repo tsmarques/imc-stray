@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 
 #include <QObject>
 
@@ -84,7 +85,7 @@ public:
     return true;
   }
 
-  IMC::Announce*
+  std::pair<QString, IMC::Announce*>
   read()
   {
     int clientlen = sizeof(clientaddr);
@@ -101,21 +102,24 @@ public:
     {
       std::cout << "null message" << std::endl;
       delete msg;
-      return nullptr;
+      return {};
     }
 
     if (msg->getId() != IMC::Announce::getIdStatic())
     {
       std::cout <<  "discarding spurious message " << msg->getName();
       delete msg;
-      return nullptr;
+      return {};
     }
 
-    return (IMC::Announce*) msg;
+    char str[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(clientaddr.sin_addr.s_addr), str, INET_ADDRSTRLEN);
+
+    return std::make_pair(str, (IMC::Announce*) msg);
   }
 
 signals:
-  void announceEvent(IMC::Announce* announce);
+  void announceEvent(IMC::Announce* announce, QString addr);
 };
 
 

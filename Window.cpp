@@ -53,11 +53,11 @@ Window::Window() :
                   try
                   {
                     std::cout << "waiting for announce..\n";
-                    IMC::Announce* announce = list.read();
+                    auto [addr, announce] = list.read();
                     if (announce == nullptr)
                       continue;
 
-                    emit list.announceEvent(announce);
+                    emit list.announceEvent(announce, addr);
                   } catch(std::runtime_error& e)
                   {
                     std::cerr << e.what() << std::endl;
