@@ -53,7 +53,9 @@ Window::Window() :
                 {
                   try
                   {
-                    std::cout << "waiting for announce..\n";
+                    if (!list.poll(1.0))
+                      continue;
+
                     auto [addr, announce] = list.read();
                     if (announce == nullptr)
                       continue;

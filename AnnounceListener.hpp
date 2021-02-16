@@ -85,6 +85,35 @@ public:
     return true;
   }
 
+  bool
+  poll(double timeout)
+  {
+    fd_set rfd;
+    FD_ZERO(&rfd);
+    FD_SET(sockfd, &rfd);
+
+    int rv = 0;
+    if (timeout < 0.0)
+    {
+      rv = select(sockfd + 1, &rfd, nullptr, nullptr, nullptr);
+    }
+    else
+    {
+      timeval tv = {(long)timeout, (long)((timeout - (long)timeout) * 1000000u)};
+      rv = select(sockfd + 1, &rfd, nullptr, nullptr, &tv);
+    }
+
+    if (rv == -1)
+    {
+      if (errno == EINTR)
+        return false;
+      else
+        throw std::runtime_error("polling error");
+    }
+
+    return rv > 0;
+  }
+
   std::pair<QString, IMC::Announce*>
   read()
   {
