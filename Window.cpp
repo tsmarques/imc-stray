@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QHeaderView>
 #include <iostream>
 
 #include <IMC/Base/Packet.hpp>
@@ -41,7 +42,7 @@ Window::Window() :
   trayIcon->show();
 
   setWindowTitle(tr("IMC System Listener"));
-  resize(225, 300);
+  resize(300, 300);
 
   // @todo handle fail
   list.bind(30100);
@@ -163,9 +164,13 @@ void Window::addContact(const IMC::Announce* announce, const QString& addr)
 {
   QTableWidgetItem* item_addr = new QTableWidgetItem(addr.toStdString().c_str());
   QTableWidgetItem* item_sysname = new QTableWidgetItem(announce->sys_name.c_str());
+
+  item_addr->setTextAlignment(Qt::AlignCenter);
+  item_sysname->setTextAlignment(Qt::AlignCenter);
   m_contact_list->setRowCount(m_contact_list->rowCount() + 1);
   m_contact_list->setItem(m_contact_list->rowCount() - 1, 0, item_sysname);
   m_contact_list->setItem(m_contact_list->rowCount() - 1, 1, item_addr);
+  m_contact_list->resizeColumnsToContents();
 }
 
 void Window::on(IMC::Announce* announce, QString addr)
