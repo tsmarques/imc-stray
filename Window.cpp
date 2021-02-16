@@ -123,6 +123,7 @@ void Window::messageClicked()
 void Window::createTable()
 {
   m_contact_list = new QTableWidget;
+  m_contact_list->verticalHeader()->setVisible(false);
   m_contact_list->setColumnCount(2);
   m_contact_list->setHorizontalHeaderLabels({"System", "IPv4"});
   m_contact_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
