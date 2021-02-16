@@ -11,10 +11,9 @@ set(REQUIRED_LIBS Core Gui Widgets Network)
 set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network)
 
 file(GLOB_RECURSE IMC_SOURCES
+        imc-cxx/IMC/Spec/Announce.hpp
         imc-cxx/IMC/Base/*.hpp
-        imc-cxx/IMC/Spec/*.hpp
-        imc-cxx/IMC/Base/*.cpp
-        imc-cxx/IMC/Spec/*.cpp)
+        imc-cxx/IMC/Base/*.cpp)
 
 include_directories(${PROJECT_NAME} imc-cxx)
 
