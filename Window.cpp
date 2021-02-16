@@ -76,9 +76,6 @@ void Window::init()
 
 void Window::setVisible(bool visible)
 {
-  m_minimize_action->setEnabled(visible);
-  m_maximize_action->setEnabled(!isMaximized());
-  m_restore_action->setEnabled(isMaximized() || !visible);
   QDialog::setVisible(visible);
 }
 
@@ -135,15 +132,6 @@ void Window::createTable()
 
 void Window::createActions()
 {
-  m_minimize_action = new QAction(tr("Mi&nimize"), this);
-  connect(m_minimize_action, &QAction::triggered, this, &QWidget::hide);
-
-  m_maximize_action = new QAction(tr("Ma&ximize"), this);
-  connect(m_maximize_action, &QAction::triggered, this, &QWidget::showMaximized);
-
-  m_restore_action = new QAction(tr("&Restore"), this);
-  connect(m_restore_action, &QAction::triggered, this, &QWidget::showNormal);
-
   m_quit_action = new QAction(tr("&Quit"), this);
   connect(m_quit_action, &QAction::triggered, qApp, &QCoreApplication::quit);
 
@@ -154,9 +142,6 @@ void Window::createActions()
 void Window::createTrayIcon()
 {
   m_tray_icon_menu = new QMenu(this);
-  m_tray_icon_menu->addAction(m_minimize_action);
-  m_tray_icon_menu->addAction(m_maximize_action);
-  m_tray_icon_menu->addAction(m_restore_action);
   m_tray_icon_menu->addSeparator();
   m_tray_icon_menu->addAction(m_quit_action);
 

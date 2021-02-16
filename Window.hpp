@@ -52,10 +52,6 @@ private:
   void addContact(const IMC::Announce* announce, const QString& addr);
 
   QTableWidget* m_contact_list;
-
-  QAction* m_minimize_action;
-  QAction* m_maximize_action;
-  QAction* m_restore_action;
   QAction* m_quit_action;
 
   QSystemTrayIcon* m_tray_icon;
