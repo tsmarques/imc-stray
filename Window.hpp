@@ -34,6 +34,7 @@ private:
   void createTable();
   void createActions();
   void createTrayIcon();
+  void startListener();
 
   //! Add IMC contact after receiving Annunce message
   void addContact(const IMC::Announce* announce, const QString& addr);

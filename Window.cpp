@@ -19,7 +19,8 @@
 
 #include "AnnounceListener.hpp"
 
-Window::Window() : m_should_listen(true)
+Window::Window() :
+  m_should_listen(true)
 {
   createTable();
   createActions();
@@ -36,29 +37,40 @@ Window::Window() : m_should_listen(true)
   setWindowTitle(tr("IMC System Listener"));
   resize(300, 300);
 
-  // @todo handle fail
-  m_announce_listener.bind();
+  startListener();
+}
+
+void
+Window::startListener()
+{
+  if (!m_announce_listener.bind())
+  {
+    std::cout << "Failed to bind to any port" << std::endl;
+    m_tray_icon->setIcon(QIcon(":/assets/disconnected.png"));
+    return;
+  }
+
   m_listener_thread = std::thread([this]()
-              {
-                std::cout << "starting listener at " << m_announce_listener.getPort() << std::endl;
-                while(this->m_should_listen)
-                {
-                  try
-                  {
-                    if (!m_announce_listener.poll(1.0))
-                      continue;
+                      {
+                        std::cout << "starting listener at " << m_announce_listener.getPort() << std::endl;
+                        while(this->m_should_listen)
+                        {
+                          try
+                          {
+                            if (!m_announce_listener.poll(1.0))
+                              continue;
 
-                    auto [addr, announce] = m_announce_listener.read();
-                    if (announce == nullptr)
-                      continue;
+                            auto [addr, announce] = m_announce_listener.read();
+                            if (announce == nullptr)
+                              continue;
 
-                    emit m_announce_listener.announceEvent(announce, addr);
-                  } catch(std::runtime_error& e)
-                  {
-                    std::cerr << e.what() << std::endl;
-                  }
-                }
-              }
+                            emit m_announce_listener.announceEvent(announce, addr);
+                          } catch(std::runtime_error& e)
+                          {
+                            std::cerr << e.what() << std::endl;
+                          }
+                        }
+                     }
   );
 }
 
@@ -122,7 +134,6 @@ void Window::addContact(const IMC::Announce* announce, const QString& addr)
 void Window::on(IMC::Announce* announce, QString addr)
 {
   std::cout << announce->services << std::endl;
-
   if (m_contacts.find(announce->sys_name) == m_contacts.end())
   {
     std::string str = "[" + addr.toStdString() + "] " + announce->sys_name;
@@ -139,7 +150,8 @@ void Window::onClose()
 {
   std::cout << "closing..." << std::endl;
   m_should_listen = false;
-  m_listener_thread.join();
+  if (m_listener_thread.joinable())
+    m_listener_thread.join();
 }
 
 #endif
