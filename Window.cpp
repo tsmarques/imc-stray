@@ -126,6 +126,9 @@ void Window::createTable()
   m_contact_list->setColumnCount(2);
   m_contact_list->setHorizontalHeaderLabels({"System", "IPv4"});
   m_contact_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
+  m_contact_list->setFocusPolicy(Qt::NoFocus);
+  m_contact_list->setSelectionMode(QAbstractItemView::NoSelection);
+  m_contact_list->horizontalHeader()->setStretchLastSection(true);
 }
 
 void Window::createActions()
