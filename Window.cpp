@@ -23,8 +23,7 @@
 #include "AnnounceListener.hpp"
 
 //! [0]
-Window::Window() :
-    should_listen(true)
+Window::Window() : m_should_listen(true)
 {
   createTable();
   createActions();
@@ -32,35 +31,35 @@ Window::Window() :
 
 //    connect(showMessageButton, &QAbstractButton::clicked, this, &Window::showMessage);
 
-  connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::messageClicked);
-  connect(trayIcon, &QSystemTrayIcon::activated, this, &Window::iconActivated);
-  connect(&list, &SystemListener::announceEvent, this, &Window::on);
+  connect(m_tray_icon, &QSystemTrayIcon::messageClicked, this, &Window::messageClicked);
+  connect(m_tray_icon, &QSystemTrayIcon::activated, this, &Window::iconActivated);
+  connect(&m_announce_listener, &SystemListener::announceEvent, this, &Window::on);
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addWidget(m_contact_list);
   setLayout(mainLayout);
-  trayIcon->show();
+  m_tray_icon->show();
 
   setWindowTitle(tr("IMC System Listener"));
   resize(300, 300);
 
   // @todo handle fail
-  list.bind(30100);
-  listener_thread = std::thread([this]()
+  m_announce_listener.bind(30100);
+  m_listener_thread = std::thread([this]()
               {
                 std::cout << "starting listener\n";
-                while(this->should_listen)
+                while(this->m_should_listen)
                 {
                   try
                   {
-                    if (!list.poll(1.0))
+                    if (!m_announce_listener.poll(1.0))
                       continue;
 
-                    auto [addr, announce] = list.read();
+                    auto [addr, announce] = m_announce_listener.read();
                     if (announce == nullptr)
                       continue;
 
-                    emit list.announceEvent(announce, addr);
+                    emit m_announce_listener.announceEvent(announce, addr);
                   } catch(std::runtime_error& e)
                   {
                     std::cerr << e.what() << std::endl;
@@ -77,9 +76,9 @@ void Window::init()
 
 void Window::setVisible(bool visible)
 {
-  minimizeAction->setEnabled(visible);
-  maximizeAction->setEnabled(!isMaximized());
-  restoreAction->setEnabled(isMaximized() || !visible);
+  m_minimize_action->setEnabled(visible);
+  m_maximize_action->setEnabled(!isMaximized());
+  m_restore_action->setEnabled(isMaximized() || !visible);
   QDialog::setVisible(visible);
 }
 
@@ -136,34 +135,34 @@ void Window::createTable()
 
 void Window::createActions()
 {
-  minimizeAction = new QAction(tr("Mi&nimize"), this);
-  connect(minimizeAction, &QAction::triggered, this, &QWidget::hide);
+  m_minimize_action = new QAction(tr("Mi&nimize"), this);
+  connect(m_minimize_action, &QAction::triggered, this, &QWidget::hide);
 
-  maximizeAction = new QAction(tr("Ma&ximize"), this);
-  connect(maximizeAction, &QAction::triggered, this, &QWidget::showMaximized);
+  m_maximize_action = new QAction(tr("Ma&ximize"), this);
+  connect(m_maximize_action, &QAction::triggered, this, &QWidget::showMaximized);
 
-  restoreAction = new QAction(tr("&Restore"), this);
-  connect(restoreAction, &QAction::triggered, this, &QWidget::showNormal);
+  m_restore_action = new QAction(tr("&Restore"), this);
+  connect(m_restore_action, &QAction::triggered, this, &QWidget::showNormal);
 
-  quitAction = new QAction(tr("&Quit"), this);
-  connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+  m_quit_action = new QAction(tr("&Quit"), this);
+  connect(m_quit_action, &QAction::triggered, qApp, &QCoreApplication::quit);
 
-  connect(quitAction, &QAction::triggered,
+  connect(m_quit_action, &QAction::triggered,
           this, &Window::onClose);
 }
 
 void Window::createTrayIcon()
 {
-  trayIconMenu = new QMenu(this);
-  trayIconMenu->addAction(minimizeAction);
-  trayIconMenu->addAction(maximizeAction);
-  trayIconMenu->addAction(restoreAction);
-  trayIconMenu->addSeparator();
-  trayIconMenu->addAction(quitAction);
+  m_tray_icon_menu = new QMenu(this);
+  m_tray_icon_menu->addAction(m_minimize_action);
+  m_tray_icon_menu->addAction(m_maximize_action);
+  m_tray_icon_menu->addAction(m_restore_action);
+  m_tray_icon_menu->addSeparator();
+  m_tray_icon_menu->addAction(m_quit_action);
 
-  trayIcon = new QSystemTrayIcon(this);
-  trayIcon->setIcon(QIcon(":/assets/disconnected.png"));
-  trayIcon->setContextMenu(trayIconMenu);
+  m_tray_icon = new QSystemTrayIcon(this);
+  m_tray_icon->setIcon(QIcon(":/assets/disconnected.png"));
+  m_tray_icon->setContextMenu(m_tray_icon_menu);
 }
 
 void Window::addContact(const IMC::Announce* announce, const QString& addr)
@@ -186,7 +185,7 @@ void Window::on(IMC::Announce* announce, QString addr)
   if (m_contacts.find(announce->sys_name) == m_contacts.end())
   {
     std::string str = "[" + addr.toStdString() + "] " + announce->sys_name;
-    trayIcon->showMessage("Announce", str.c_str(), trayIcon->icon(), 5000);
+    m_tray_icon->showMessage("Announce", str.c_str(), m_tray_icon->icon(), 5000);
     addContact(announce, addr);
   }
 
@@ -198,8 +197,8 @@ void Window::on(IMC::Announce* announce, QString addr)
 void Window::onClose()
 {
   std::cout << "closing..." << std::endl;
-  should_listen = false;
-  listener_thread.join();
+  m_should_listen = false;
+  m_listener_thread.join();
 }
 
 #endif
