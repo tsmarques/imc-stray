@@ -13,7 +13,7 @@
 class SystemListener : public QObject
 {
 Q_OBJECT
-
+  static constexpr std::array<int, 5> c_ports = {30100, 30101, 30102, 30103, 30104};
   int sockfd; /* socket */
   int portno; /* port to listen on */
   struct sockaddr_in serveraddr; /* server's addr */
@@ -26,20 +26,8 @@ Q_OBJECT
   constexpr static void
   error(const char* msg)
   {
-    printf("%s", msg);
+    printf("%s\n", msg);
   }
-
-public:
-  SystemListener() :
-      sockfd(-1),
-      portno(-1),
-      serveraddr(),
-      clientaddr(),
-      hostp(nullptr),
-      buf(),
-      hostaddrp(nullptr),
-      optval(0)
-  {  }
 
   bool bind(int port)
   {
@@ -83,6 +71,30 @@ public:
     }
 
     return true;
+  }
+
+public:
+  SystemListener() :
+      sockfd(-1),
+      portno(-1),
+      serveraddr(),
+      clientaddr(),
+      hostp(nullptr),
+      buf(),
+      hostaddrp(nullptr),
+      optval(0)
+  {  }
+
+  int
+  getPort()
+  {
+    return portno;
+  }
+
+  bool
+  bind()
+  {
+    return std::any_of(c_ports.begin(), c_ports.end(), [this](int port) {return bind(port);});
   }
 
   bool

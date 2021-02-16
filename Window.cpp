@@ -37,10 +37,10 @@ Window::Window() : m_should_listen(true)
   resize(300, 300);
 
   // @todo handle fail
-  m_announce_listener.bind(30100);
+  m_announce_listener.bind();
   m_listener_thread = std::thread([this]()
               {
-                std::cout << "starting listener\n";
+                std::cout << "starting listener at " << m_announce_listener.getPort() << std::endl;
                 while(this->m_should_listen)
                 {
                   try
