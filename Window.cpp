@@ -7,8 +7,6 @@
 #include <QCloseEvent>
 #include <QComboBox>
 #include <QCoreApplication>
-#include <QGroupBox>
-#include <QLabel>
 #include <QLineEdit>
 #include <QMenu>
 #include <QMessageBox>
@@ -17,21 +15,16 @@
 #include <QHeaderView>
 #include <iostream>
 
-#include <IMC/Base/Packet.hpp>
 #include <IMC/Spec/Announce.hpp>
 
 #include "AnnounceListener.hpp"
 
-//! [0]
 Window::Window() : m_should_listen(true)
 {
   createTable();
   createActions();
   createTrayIcon();
 
-//    connect(showMessageButton, &QAbstractButton::clicked, this, &Window::showMessage);
-
-  connect(m_tray_icon, &QSystemTrayIcon::messageClicked, this, &Window::messageClicked);
   connect(m_tray_icon, &QSystemTrayIcon::activated, this, &Window::iconActivated);
   connect(&m_announce_listener, &SystemListener::announceEvent, this, &Window::on);
 
@@ -69,23 +62,10 @@ Window::Window() : m_should_listen(true)
   );
 }
 
-void Window::init()
-{
-}
-
 
 void Window::setVisible(bool visible)
 {
   QDialog::setVisible(visible);
-}
-
-void Window::setIcon(int index)
-{
-//    QIcon icon = iconComboBox->itemIcon(index);
-//    trayIcon->setIcon(icon);
-//    setWindowIcon(icon);
-//
-//    trayIcon->setToolTip(iconComboBox->itemText(index));
 }
 
 void Window::iconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -93,30 +73,6 @@ void Window::iconActivated(QSystemTrayIcon::ActivationReason reason)
   (void) reason;
   setVisible(!isVisible());
 }
-
-void Window::showMessage()
-{
-//    showIconCheckBox->setChecked(true);
-//    int selectedIcon = typeComboBox->itemData(typeComboBox->currentIndex()).toInt();
-//    QSystemTrayIcon::MessageIcon msgIcon = QSystemTrayIcon::MessageIcon(selectedIcon);
-//
-//    if (selectedIcon == -1) { // custom icon
-//        QIcon icon(iconComboBox->itemIcon(iconComboBox->currentIndex()));
-//        trayIcon->showMessage(titleEdit->text(), bodyEdit->toPlainText(), icon,
-//                              durationSpinBox->value() * 1000);
-//    } else {
-//        trayIcon->showMessage(titleEdit->text(), bodyEdit->toPlainText(), msgIcon,
-//                              durationSpinBox->value() * 1000);
-//    }
-}
-
-void Window::messageClicked()
-{
-  QMessageBox::information(nullptr, tr("Systray"),
-                           tr("Sorry, I already gave what help I could.\n"
-                              "Maybe you should try asking a human?"));
-}
-
 
 void Window::createTable()
 {

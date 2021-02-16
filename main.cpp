@@ -21,7 +21,6 @@ int main(int argc, char *argv[])
     }
     QApplication::setQuitOnLastWindowClosed(false);
     Window window;
-    window.init();
     return app.exec();
 }
 
