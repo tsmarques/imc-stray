@@ -146,7 +146,7 @@ void Window::createTrayIcon()
   m_tray_icon_menu->addAction(m_quit_action);
 
   m_tray_icon = new QSystemTrayIcon(this);
-  m_tray_icon->setIcon(QIcon(":/assets/disconnected.png"));
+  m_tray_icon->setIcon(QIcon(":/assets/dune.png"));
   m_tray_icon->setContextMenu(m_tray_icon_menu);
 }
 
