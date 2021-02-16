@@ -36,9 +36,6 @@ public:
 
     void setVisible(bool visible) override;
 
-protected:
-    void closeEvent(QCloseEvent *event) override;
-
 private slots:
     void setIcon(int index);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);

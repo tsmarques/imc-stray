@@ -65,63 +65,10 @@ Window::Window() :
                 }
               }
   );
-
-//    udpSocket = new QUdpSocket(this);
-//
-////    udpSocket->setSocketOption(QAbstractSocket::MulticastTtlOption, 1);
-////    udpSocket->setSocketOption(QAbstractSocket::MulticastLoopbackOption, 0);
-////    int value = 1;
-////    setsockopt(udpSocket->socketDescriptor(), SOL_SOCKET, SO_BROADCAST, &value, sizeof(int));
-//
-//
-//
-//    //    udpSocket->bind(QHostAddress::LocalHost, 7755);
-////    bool ret = udpSocket->bind(30100, QUdpSocket::ShareAddress);
-////    if(!ret)
-////        std::cout << "failed" << std::endl;
-////    udpSocket->bind(QHostAddress::AnyIPv4, 30101, QUdpSocket::ShareAddress);
-////    udpSocket->bind(QHostAddress::AnyIPv4, 30102, QUdpSocket::ShareAddress);
-////    udpSocket->bind(QHostAddress::AnyIPv4, 30103, QUdpSocket::ShareAddress);
-//    if (!udpSocket->bind(QHostAddress::Any, 30101, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint))
-//        std::cout << "nop\n";
-//
-//    udpSocket->setSocketOption(QAbstractSocket::MulticastLoopbackOption, QVariant(1));
-//    connect(udpSocket, &QUdpSocket::readyRead,
-//            this, &Window::onNewData);
 }
 
 void Window::init()
 {
-//    delete udpSocket;
-//    udpSocket = nullptr;
-//
-//    udpSocket = new QUdpSocket(this);
-//
-////    udpSocket->setSocketOption(QAbstractSocket::MulticastTtlOption, 1);
-////    udpSocket->setSocketOption(QAbstractSocket::MulticastLoopbackOption, 0);
-////    int value = 1;
-////    setsockopt(udpSocket->socketDescriptor(), SOL_SOCKET, SO_BROADCAST, &value, sizeof(int));
-//
-//
-//
-//    //    udpSocket->bind(QHostAddress::LocalHost, 7755);
-////    bool ret = udpSocket->bind(30100, QUdpSocket::ShareAddress);
-////    if(!ret)
-////        std::cout << "failed" << std::endl;
-////    udpSocket->bind(QHostAddress::AnyIPv4, 30101, QUdpSocket::ShareAddress);
-////    udpSocket->bind(QHostAddress::AnyIPv4, 30102, QUdpSocket::ShareAddress);
-////    udpSocket->bind(QHostAddress::AnyIPv4, 30103, QUdpSocket::ShareAddress);
-//    udpSocket->bind(QHostAddress::Any, 30104, QUdpSocket::DontShareAddress);
-//
-//    for(auto& itf : QNetworkInterface::allInterfaces())
-//    {
-//        if (itf.type() != QNetworkInterface::InterfaceType::Wifi)
-//            continue;
-//
-//        std::cout << "joining multicast on " << itf.name().constData() << std::endl;
-//        udpSocket->setMulticastInterface(itf);
-//        udpSocket->joinMulticastGroup(QHostAddress("224.0.75.69"), itf);
-//    }
 }
 
 
@@ -131,24 +78,6 @@ void Window::setVisible(bool visible)
   maximizeAction->setEnabled(!isMaximized());
   restoreAction->setEnabled(isMaximized() || !visible);
   QDialog::setVisible(visible);
-}
-
-void Window::closeEvent(QCloseEvent *event)
-{
-#ifdef Q_OS_MACOS
-  if (!event->spontaneous() || !isVisible()) {
-        return;
-    }
-#endif
-  if (trayIcon->isVisible()) {
-    QMessageBox::information(this, tr("Systray"),
-                             tr("The program will keep running in the "
-                                "system tray. To terminate the program, "
-                                "choose <b>Quit</b> in the context menu "
-                                "of the system tray entry."));
-    hide();
-    event->ignore();
-  }
 }
 
 void Window::setIcon(int index)
