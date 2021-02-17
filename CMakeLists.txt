@@ -33,3 +33,5 @@ endif ()
 find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})
 target_link_libraries(${PROJECT_NAME} "pthread")
+
+install(TARGETS ${PROJECT_NAME})
