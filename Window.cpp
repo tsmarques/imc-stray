@@ -57,7 +57,7 @@ Window::startListener()
                         {
                           try
                           {
-                            if (!m_announce_listener.poll(1.0))
+                            if (!m_announce_listener.poll(10.0))
                               continue;
 
                             auto [addr, announce] = m_announce_listener.read();
