@@ -25,6 +25,8 @@ add_executable(${PROJECT_NAME}
         AnnounceListener.hpp
         ${IMC_SOURCES})
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -s -Wall -Wextra -pedantic-errors -flto -DNDEBUG")
+
 find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})
 target_link_libraries(${PROJECT_NAME} "pthread")
