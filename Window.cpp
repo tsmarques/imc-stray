@@ -35,7 +35,7 @@ Window::Window() :
   setLayout(mainLayout);
   m_tray_icon->show();
 
-  setWindowTitle(tr("IMC System Listener"));
+  setWindowTitle(tr("Active Contacts"));
   resize(300, 300);
 
   startListener();
