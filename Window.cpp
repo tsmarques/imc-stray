@@ -28,6 +28,7 @@ Window::Window() :
 
   connect(m_tray_icon, &QSystemTrayIcon::activated, this, &Window::iconActivated);
   connect(&m_announce_listener, &SystemListener::announceEvent, this, &Window::on);
+  connect(&m_announce_listener, &SystemListener::checkPurgeEvent, this, &Window::checkDeadSystems);
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addWidget(m_contact_list);
@@ -57,7 +58,11 @@ Window::startListener()
                         {
                           try
                           {
-                            if (!m_announce_listener.poll(10.0))
+                            auto curr_t = QDateTime::currentMSecsSinceEpoch() / 1000.0;
+                            if (std::abs(curr_t - m_last_purge_time) >= 10.0)
+                              emit m_announce_listener.checkPurgeEvent();
+
+                            if (!m_announce_listener.poll(1.0))
                               continue;
 
                             auto [addr, announce] = m_announce_listener.read();
@@ -125,14 +130,31 @@ void Window::addContact(const IMC::Announce* announce, const QString& addr)
 
   item_addr->setTextAlignment(Qt::AlignCenter);
   item_sysname->setTextAlignment(Qt::AlignCenter);
+  m_sys2row[announce->sys_name] = m_contact_list->rowCount();
   m_contact_list->setRowCount(m_contact_list->rowCount() + 1);
   m_contact_list->setItem(m_contact_list->rowCount() - 1, 0, item_sysname);
   m_contact_list->setItem(m_contact_list->rowCount() - 1, 1, item_addr);
   m_contact_list->resizeColumnsToContents();
 }
 
+void Window::removeContact(const std::string& sysname)
+{
+  if (m_sys2row.find(sysname) == m_sys2row.end())
+  {
+    std::cout << "error: " << sysname << " not known" << std::endl;
+  }
+
+  m_contact_list->removeRow(m_sys2row[sysname]);
+  m_contact_list->resizeColumnsToContents();
+
+  m_contacts.erase(sysname);
+  m_sys2row.erase(sysname);
+}
+
 void Window::on(IMC::Announce* announce, QString addr)
 {
+  std::scoped_lock lock(m_contacts_lock);
+
   std::cout << announce->services << std::endl;
   if (m_contacts.find(announce->sys_name) == m_contacts.end())
   {
@@ -144,6 +166,29 @@ void Window::on(IMC::Announce* announce, QString addr)
   m_contacts[announce->sys_name] = announce->getTimeStamp();
 
   delete announce;
+}
+
+void Window::checkDeadSystems()
+{
+  std::cout << "checking for inactive contacts" << std::endl;
+  std::scoped_lock lock(m_contacts_lock);
+
+  std::vector<std::string> dead_sys;
+  auto curr_time_s = QDateTime::currentSecsSinceEpoch();
+  for (auto [sys, time] : m_contacts)
+  {
+    if (std::abs(curr_time_s - time) >= 10.0)
+    {
+      m_tray_icon->showMessage("Purge", sys.c_str(), m_tray_icon->icon(), 5000);
+      dead_sys.push_back(sys);
+    }
+  }
+
+  // remove dead systems
+  for (const std::string& dead : dead_sys)
+    removeContact(dead);
+
+  m_last_purge_time = QDateTime::currentMSecsSinceEpoch() / 1000.0;
 }
 
 void Window::onClose()

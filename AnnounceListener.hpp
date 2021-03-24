@@ -23,7 +23,7 @@ Q_OBJECT
   char* hostaddrp; /* dotted decimal host addr string */
   int optval; /* flag value for setsockopt */
 
-  constexpr static void
+  static void
   error(const char* msg)
   {
     printf("%s\n", msg);
@@ -161,6 +161,7 @@ public:
 
 signals:
   void announceEvent(IMC::Announce* announce, QString addr);
+  void checkPurgeEvent();
 };
 
 

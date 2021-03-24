@@ -28,6 +28,7 @@ public:
 private slots:
   void iconActivated(QSystemTrayIcon::ActivationReason reason);
   void on(IMC::Announce* announce, QString addr);
+  void checkDeadSystems();
   void onClose();
 
 private:
@@ -38,6 +39,8 @@ private:
 
   //! Add IMC contact after receiving Annunce message
   void addContact(const IMC::Announce* announce, const QString& addr);
+  //! Remove a given contact after inactivity
+  void removeContact(const std::string& announce);
 
   //! Active IMC contacts
   QTableWidget* m_contact_list;
@@ -51,10 +54,16 @@ private:
   std::atomic<bool> m_should_listen;
   //! Announce Listener
   SystemListener m_announce_listener;
+  //! Time from last time we checked for dead systems
+  qint64 m_last_purge_time;
   //! Announce Listener thread
   std::thread m_listener_thread;
   //! Map between system's name and its last announce timestamp
   std::map<std::string, double> m_contacts;
+  //! Mutex for accessing list of contacts
+  std::mutex m_contacts_lock;
+  //! Mapping between system name a table row
+  std::map<std::string, int> m_sys2row;
 };
 
 #endif
