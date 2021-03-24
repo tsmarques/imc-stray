@@ -46,14 +46,14 @@ Window::startListener()
 {
   if (!m_announce_listener.bind())
   {
-    std::cout << "Failed to bind to any port" << std::endl;
+    std::cerr << "Failed to bind to any port" << std::endl;
     m_tray_icon->setIcon(QIcon(":/assets/disconnected.png"));
     return;
   }
 
   m_listener_thread = std::thread([this]()
                       {
-                        std::cout << "starting listener at " << m_announce_listener.getPort() << std::endl;
+                        std::cerr << "starting listener at " << m_announce_listener.getPort() << std::endl;
                         while(this->m_should_listen)
                         {
                           try
@@ -141,7 +141,7 @@ void Window::removeContact(const std::string& sysname)
 {
   if (m_sys2row.find(sysname) == m_sys2row.end())
   {
-    std::cout << "error: " << sysname << " not known" << std::endl;
+    std::cerr << "error: " << sysname << " not known" << std::endl;
   }
 
   m_contact_list->removeRow(m_sys2row[sysname]);
@@ -155,7 +155,7 @@ void Window::on(IMC::Announce* announce, QString addr)
 {
   std::scoped_lock lock(m_contacts_lock);
 
-  std::cout << announce->services << std::endl;
+  std::cerr << announce->services << std::endl;
   if (m_contacts.find(announce->sys_name) == m_contacts.end())
   {
     std::string str = "[" + addr.toStdString() + "] " + announce->sys_name;
@@ -170,7 +170,7 @@ void Window::on(IMC::Announce* announce, QString addr)
 
 void Window::checkDeadSystems()
 {
-  std::cout << "checking for inactive contacts" << std::endl;
+  std::cerr << "checking for inactive contacts" << std::endl;
   std::scoped_lock lock(m_contacts_lock);
 
   std::vector<std::string> dead_sys;
@@ -193,7 +193,7 @@ void Window::checkDeadSystems()
 
 void Window::onClose()
 {
-  std::cout << "closing..." << std::endl;
+  std::cerr << "closing..." << std::endl;
   m_should_listen = false;
   if (m_listener_thread.joinable())
     m_listener_thread.join();

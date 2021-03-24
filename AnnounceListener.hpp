@@ -141,14 +141,14 @@ public:
 
     if (msg == nullptr)
     {
-      std::cout << "null message" << std::endl;
+      std::cerr << "null message" << std::endl;
       delete msg;
       return {};
     }
 
     if (msg->getId() != IMC::Announce::getIdStatic())
     {
-      std::cout <<  "discarding spurious message " << msg->getName();
+      std::cerr <<  "discarding spurious message " << msg->getName();
       delete msg;
       return {};
     }
