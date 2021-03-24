@@ -18,11 +18,11 @@ file(GLOB_RECURSE IMC_SOURCES
 include_directories(${PROJECT_NAME} imc-cxx)
 
 add_executable(${PROJECT_NAME}
-        main.cpp
-        Window.cpp
-        Window.hpp
+        src/main.cpp
+        src/Window.cpp
+        src/Window.hpp
         systray.qrc
-        AnnounceListener.hpp
+        src/AnnounceListener.hpp
         ${IMC_SOURCES})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -s -Wall -Wextra -pedantic-errors -flto -DNDEBUG")
