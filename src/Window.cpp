@@ -177,7 +177,7 @@ void Window::checkDeadSystems()
   auto curr_time_s = QDateTime::currentSecsSinceEpoch();
   for (auto [sys, time] : m_contacts)
   {
-    if (std::abs(curr_time_s - time) >= 10.0)
+    if (std::abs(curr_time_s - time) >= SystemListener::c_stale_node_timeout)
     {
       m_tray_icon->showMessage("Purge", sys.c_str(), m_tray_icon->icon(), 5000);
       dead_sys.push_back(sys);

@@ -74,6 +74,9 @@ Q_OBJECT
   }
 
 public:
+  //! Timeout after which a node is considered stale
+  static constexpr float c_stale_node_timeout = 20.0;
+
   SystemListener() :
       sockfd(-1),
       portno(-1),
